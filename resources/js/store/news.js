@@ -4,7 +4,8 @@ export default{
         recommend: [], // 推荐
         lists: [],  // 列表
         detail: {},  // 详情
-        branch: [1, 2, 3, 4, 5, 6, 7, 8]
+        branch: [1, 2, 3, 4, 5, 6, 7, 8],
+        sortItems: [], // 排名列表
     },
     mutations: {
         // 注意，这里可以设置 state 属性，但是不能异步调用，异步操作写到 actions 中
@@ -21,6 +22,9 @@ export default{
         // 修改branch
         setBranch(state, items) {
             state.branch = items;
+        },
+        setSortItems(state, items) {
+            state.sortItems = items;
         }
     },
     actions: {
@@ -31,14 +35,16 @@ export default{
                 document.body.scrollTop = 0;
             });
         },
-        getNewsRecommend({commit}) {
-            api.getNewsRecommend().then(function(res) {
-                commit('SETRECOMMEND', res.data);
-            });
-        },
         getNewsLists({commit}) {
             api.getNewsLists().then(function(res) {
                 commit('SETLISTS', res.data);
+            });
+        },
+        // 院校相关排名
+        getSortList({commit}, params) {
+            console.log(params);
+            api.getSortList(params).then(function(res) {
+                commit('setSortItems', res.data);
             });
         }
     }

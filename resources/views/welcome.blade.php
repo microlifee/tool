@@ -15,7 +15,7 @@
     <el-container>
         <el-aside width="260px" class="nav" style="background-color: rgb(238, 241, 246); position: fixed; overflow: hidden;">
             <el-menu
-                    default-active="1-4-1"
+                    default-active="3-2"
                     class="el-menu-vertical-demo"
                     background-color="#545c64"
                     text-color="#fff"
@@ -34,15 +34,11 @@
                         <a href="/#/politics/choice/list"><el-menu-item index="2-1">所有选择题</el-menu-item></a>
                         <a href="/#/politics/choice/new"><el-menu-item index="2-2">新增选择题</el-menu-item></a>
                     </el-menu-item-group>
-                    <el-submenu index="1-4">
-                        <template slot="title">选项4</template>
-                        <el-menu-item index="1-4-1">选项1</el-menu-item>
-                    </el-submenu>
-                </el-submenu>
-                <el-menu-item index="2">
-                    <i class="el-icon-menu"></i>
-                    <span slot="title">导航二</span>
-                </el-menu-item>
+                    <el-menu-item-group>
+                        <template slot="title">院校选择</template>
+                        <a href="/#/university/sort/list"><el-menu-item index="3-1">院校和排名</el-menu-item></a>
+                        <a href="/#/university/sort/new"><el-menu-item index="3-2">新增院校相关排名</el-menu-item></a>
+                    </el-menu-item-group>
                 <el-menu-item index="3" disabled>
                     <i class="el-icon-document"></i>
                     <span slot="title">导航三</span>

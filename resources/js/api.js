@@ -23,6 +23,10 @@ export default {
     getBranchList:function(){
         return axios.get('api/choice/branch')
     },
+    // 院校相关排名
+    getSortList: function(params) {
+        return axios.get(`api/university/sort/${params.universityID}/${params.sortType}`)
+    },
 
     // 保存数据
     saveCateHandle: function (params) {

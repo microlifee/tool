@@ -6,7 +6,7 @@
         </div>
         <div class="main el-main">
             <el-row >
-                <el-col :span="12">
+                <el-col :span="11">
                     <el-table v-if="universityList.length > 0"  :data="universityList">
                         <el-table-column prop="id" label="#" width="100"></el-table-column>
                         <el-table-column prop="title" label="大学" ></el-table-column>
@@ -14,7 +14,9 @@
                                 label="操作"
                                 width="200">
                             <template slot-scope="scope">
-                                <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                                <el-button @click="handleClick(scope.row, 1)" type="text" size="small">门类</el-button>
+                                <el-button @click="handleClick(scope.row, 2)" type="text" size="small">一级学科</el-button>
+                                <el-button @click="handleClick(scope.row, 3)" type="text" size="small">专业</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -41,7 +43,27 @@
                         </el-pagination>
                     </div>
                 </el-col>
-                <el-col :span="12">{{ tableData.length }}</el-col>
+                <el-col :span="12" :offset="1">
+                    <el-table
+                            :data="sortItems"
+                            style="width: 100%">
+                        <el-table-column
+                                prop="id"
+                                label="#"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                prop="name"
+                                label="一级学科"
+                                >
+                        </el-table-column>
+                        <el-table-column
+                                prop="sort"
+                                label="排名"
+                                width="120">
+                        </el-table-column>
+                    </el-table>
+                </el-col>
             </el-row>
 
 
@@ -55,7 +77,8 @@
         name: "UniversityList",
         data() {
             return {
-                universityList: []
+                universityList: [],
+                tableLabel: '门类'
             }
         },
         computed: {
@@ -64,7 +87,10 @@
             },
             total() {
                 return this.$store.state.news.lists.length;
-            }
+            },
+            ...mapState({
+                 sortItems: state => state.news.sortItems,
+            }),
         },
         created() {
             this.getNewsLists();
@@ -73,7 +99,8 @@
         },
         methods: {
             ...mapActions([
-                'getNewsLists'
+                'getNewsLists',
+                'getSortList'
             ]),
             // 切换分页
             onChangePageHandle(currentPage) {
@@ -82,9 +109,11 @@
                 const CURRENT_UNIVERSITY_ITEMS = UNIVERSITY_ITEMS.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
                 this.universityList = CURRENT_UNIVERSITY_ITEMS;
             },
-            //
+            // 查看排名数据
             handleClick(uEntity, type) {
-                console.log(uEntity);
+                const UNIVERSITY_ID = uEntity.id;
+                this.getSortList({ universityID: UNIVERSITY_ID, sortType: type });
+
             }
         }
     }

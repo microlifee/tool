@@ -22,4 +22,5 @@ Route::get('/politics/section', 'SectionController@index');
 Route::get('/choice/university', 'UniversityController@index');
 Route::get('/choice/branch', 'BranchController@index');
 Route::get('/choice/profession', 'ProfessionController@index');
+Route::get('/university/sort/{universityID}/{sortType}', 'UniversityController@getItems');
 Route::post('/university/sort', 'UniversityController@sort');
