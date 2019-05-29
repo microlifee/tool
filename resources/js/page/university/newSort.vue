@@ -8,52 +8,52 @@
             <el-row>
                 <el-col :span="24">
                     <el-col :span="11">
-                        <el-select class="el-select" v-model="value" filterable placeholder="请选择" @change="pickerHandle">
-                             <el-option
-                            v-for="item in collegelists"
-                            :key="item.id"
-                            :label="item.title"
-                            :value="item.id">
-                            </el-option>
-                        </el-select>
-                    <div class="radio-group">
-                        <el-radio-group v-model="radio">
-                            <el-radio :label="1">学科门类</el-radio>
-                            <el-radio :label="2">一级学科排名</el-radio>
-                            <el-radio :label="3">5★+专业</el-radio>
-                            <el-radio :label="4">5★专业</el-radio>
-                            <el-radio :label="5">5★-专业</el-radio>
-                            <el-radio :label="6">4★专业</el-radio>
-                        </el-radio-group>
-                    </div>
-                    <div class="input-text">
-                        <el-input
-                            type="textarea"
-                            :autosize="{ minRows: 10}"
-                            placeholder="请输入内容"
-                            @keyup.native="splitPointHandle"
-                            v-model="textarea">
-                        </el-input>
-                    </div>
-                    <div class="button">
-                        <el-button v-if="title && radio && textarea" type="success" @click="action">开始转换</el-button>
-                        <el-button v-else type="success" disabled>院校或转换数据为空</el-button>
-                    </div>
+                        <el-form ref="form" :model="form" label-width="80px">
+                            <!--选择院校-->
+                              <el-form-item>
+                                <el-select v-model="form.universityID" placeholder="请选择院校" @change="pickerHandle">
+                                    <el-option
+                                    v-for="item in collegelists"
+                                    :key="item.id"
+                                    :label="item.title"
+                                    :value="item.id">
+                                    </el-option>
+                                </el-select>
+                              </el-form-item>
+                              <!--选择专业-->
+                                <el-form-item>
+                                    <el-radio-group v-model="form.radio" @change="radioHandle">
+                                        <el-radio v-for="item in form.radiolist" :key="item.label" :label="item.label">{{item.radiotext}}</el-radio>
+                                    </el-radio-group>
+                                </el-form-item>
+                                <!--专业-->
+                                <el-form-item label="活动形式">
+                                    <el-input
+                                        type="textarea"
+                                        :autosize="{ minRows: 10}"
+                                        placeholder="请输入内容"
+                                        @keyup.native="splitPointHandle"
+                                        v-model="form.textarea">
+                                    </el-input>
+                                </el-form-item>
+                                <!--按钮-->
+                                <el-form-item>
+                                    <el-button v-if="form.universityID && form.radio && form.textarea" type="success" @click="action">开始转换</el-button>
+                                    <el-button v-else type="success" disabled>院校或转换数据为空</el-button>
+                                </el-form-item>
+                        </el-form>
                     </el-col>
-                <el-col :span="2"></el-col>
 
-                <el-col :span="11">
+                <el-col :span="11" :offset="2">
                     <div class="right" :style="{'display':display}">
-                        <div class="table">
                             <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">// :row-class-name="tableRowClassName"
                                 <el-table-column prop="course" label="学科" width="180"></el-table-column>
                                 <el-table-column prop="rank" label="排名" width="180"></el-table-column>
                                 <el-table-column prop="number" label="开设院校数"></el-table-column>
                                 <el-table-column prop="check" label="数据校对"></el-table-column>
                             </el-table>
-                        </div>
-                        <div class="button-sub">
-                            <el-button type="success" @click="sublimt">数据校验无误，现在提交~</el-button>
+                        <div class="button">
+                            <el-button type="success" @click=" dialogVisibleSuccess = true">数据校验无误，现在提交~</el-button>
                         </div>
                     </div>
                 </el-col>
@@ -65,9 +65,9 @@
                 :visible.sync="dialogVisible"
                 width="30%"
                 :before-close="handleClose">
-                <p>选择院校：<b>{{ univercityTitle }}</b></p>
+                <p>选择院校：<b>{{ universityTitledialog }}</b></p>
                 <p>共转换成 <b>{{ tableData.length }}</b> 条数据~</p>
-                <p>数据类型： <b>{{ pickedText }}</b></p>
+                <p>数据类型： <b>{{ radiotext }}</b></p>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="dialogVisible = false">取 消</el-button>
                     <el-button type="primary" @click="confirm">确 定</el-button>
@@ -89,7 +89,7 @@
                 </div>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="dialogVisibleSuccess = false">取 消</el-button>
-                    <el-button type="primary" @click="dialogVisibleSuccess = false">确 定</el-button>
+                    <el-button type="primary" @click="sublimt">确 定</el-button>
                 </span>
             </el-dialog>
         </div>
@@ -102,35 +102,42 @@ import { mapState, mapActions } from 'vuex';
         name: "newSort",
         data() {
             return {
-            isIn:[],
+            form:{
+                universityID:'',
+                universityTitle:'',
+                radio:0,
+                radiolist:[
+                            {label: 1, radiotext: '学科门类'},
+                            {label: 2,radiotext: '一级学科排名'},
+                            {label: 3, radiotext: '5★+专业'},
+                            {label: 4,radiotext: '5★专业'},
+                            {label: 5, radiotext: '5★-专业'},
+                            {label: 6,radiotext: '4★专业'}
+                            ],
+                textarea:'哲学7/154、理论经济学14/115、应用经济学9/244、法学3/188、政治学5/104、社会学5/88、马克思主义理论3/328、教育学13/140、心理学16/97',
+            },
             display:'none',
-            title: 5 ,
-            value:'',
-            radio: 0,
-            Items: [],
-            radiotext: [],
             dialogVisible: false,
             dialogVisibleSuccess:false,
-            pickedText: '',
-            univercityTitle:'',
-            universityID: '',
-            isShow:'false',
-            textarea: '哲学7/154、理论经济学14/115、应用经济学9/244、法学3/188、政治学5/104、社会学5/88、马克思主义理论3/328、教育学13/140、心理学16/97',
-            tableData: [],
-            all:[],
-            subject:[{id :1, name:'哲学'},
-            {id :2, name:'经济学'},
-            {id :3, name:'法学'},
-            {id :4, name:'教育学'},
-            {id :5, name:'文学'},
-            {id :6, name:'历史学'},
-            {id :7, name:'理学'},
-            {id :8, name:'工学'},
-            {id :9, name:'农学'},
-            {id :10, name:'医学'},
-            {id :11, name:'军事学'},
-            {id :12, name:'管理学'},
-            {id :13, name:'艺术学'}]
+            radiotext: '',
+            universityTitledialog:'',
+            choose:{
+                subject:[
+                    {id :1, name:'哲学'},
+                    {id :2, name:'经济学'},
+                    {id :3, name:'法学'},
+                    {id :4, name:'教育学'},
+                    {id :5, name:'文学'},
+                    {id :6, name:'历史学'},
+                    {id :7, name:'理学'},
+                    {id :8, name:'工学'},
+                    {id :9, name:'农学'},
+                    {id :10, name:'医学'},
+                    {id :11, name:'军事学'},
+                    {id :12, name:'管理学'},
+                    {id :13, name:'艺术学'}
+                    ]
+                }
         }
         },
         computed: mapState({
@@ -142,11 +149,9 @@ import { mapState, mapActions } from 'vuex';
             this.getCollegeList();
             this.getProfessList();
             this.getBranchList();
-            this.textarea = localStorage.getItem('LOCAL_SAVE_POINTS') ? localStorage.getItem('LOCAL_SAVE_POINTS') : '';
-            this.value = localStorage.getItem('LOCAL_SAVE_TITLE') ? localStorage.getItem('LOCAL_SAVE_TITLE') : '';
-            this.univercityTitle = localStorage.getItem('LOCAL_SAVE_TITLE') ? localStorage.getItem('LOCAL_SAVE_TITLE') : '';
-            if (this.textarea) {
-                let arr = this.textarea.split("、");
+            this.form.textarea = localStorage.getItem('LOCAL_SAVE_POINTS') ? localStorage.getItem('LOCAL_SAVE_POINTS') : '';
+            if (this.form.textarea) {
+                let arr = this.form.textarea.split("、");
                 var regex = /[\u2E80-\u2EFF\u2F00-\u2FDF\u3000-\u303F\u31C0-\u31EF\u3200-\u32FF\u3300-\u33FF\u3400-\u4DBF\u4DC0-\u4DFF\u4E00-\u9FBF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF]+/g;
                 var universityItems = [];
                 arr.forEach((item, index) => {
@@ -169,41 +174,29 @@ import { mapState, mapActions } from 'vuex';
                 this.tableData = universityItems;
             }
         },
-        watch: {
-            radio(newValue, oldValue) {
-                let radiotext=[];
-                let tempCatalog = this.Items['radiotext'];
-                let pickedText = '';
-                if (newValue != oldValue) {
-                    switch (newValue) {
-                        case 1: tempCatalog = this.Items['radiotext']; pickedText = '学科门类 '; break;
-                        case 2: tempCatalog = this.Items['branch']; pickedText = '一级学科排名'; break;
-                        case 3: tempCatalog = this.Items['profession']; pickedText = '5★+专业'; break;
-                        case 4: tempCatalog = this.Items['profession']; pickedText = '5★专业'; break;
-                        case 5: tempCatalog = this.Items['profession']; pickedText = '5★-专业'; break;
-                        case 6: tempCatalog = this.Items['profession']; pickedText = '4★专业'; break;
-                    }
-                    this.radiotext = tempCatalog;
-                    this.pickedText = pickedText;
-                }
-            }
-        },
         methods: {
             ...mapActions([
                 'getCollegeList',
                 'getProfessList',
                 'getBranchList'
             ]),
-
+            //选择院校
             pickerHandle(universityID){
                 const currentUniversity = this.collegelists.find(item => {
                     return item.id == universityID;
                 })
                 console.log('---sss', currentUniversity);
-                this.univercityTitle = currentUniversity.title;
-                this.universityID = currentUniversity.id;
-                localStorage.setItem('LOCAL_SAVE_TITLE', this.univercityTitle);
+                this.universityTitledialog=currentUniversity.title;
             },
+            //选择学科专业
+            radioHandle(radio){
+                 const radioList = this.form.radiolist.find(item => {
+                    return item.label == radio;
+                })
+                console.log('---sss', radioList);
+                this.radiotext = radioList.radiotext;
+            },
+            //弹出关闭
             handleClose(done) {
                 this.$confirm('确认关闭？')
                 .then(_ => {
@@ -211,23 +204,26 @@ import { mapState, mapActions } from 'vuex';
                 })
                 .catch(_ => {});
             },
+            //专业内容
             splitPointHandle() {
-                let areatext = this.textarea;
+                let areatext = this.form.textarea;
                 localStorage.setItem('LOCAL_SAVE_POINTS', areatext);
                 this.handle();
             },
+            //开始转换按钮
             action(){
                 let radiotext=this.pickedText;
                 this.handle();
                 this.dialogVisible=true;
             },
+            //数据提示确定按钮
             confirm(){
                 this.dialogVisible = false;
                 this.display='block';
             },
 
             handle(){
-                let areatext = this.textarea;
+                let areatext = this.form.textarea;
                 let arr = areatext.split("、");
                 var regex = /[\u2E80-\u2EFF\u2F00-\u2FDF\u3000-\u303F\u31C0-\u31EF\u3200-\u32FF\u3300-\u33FF\u3400-\u4DBF\u4DC0-\u4DFF\u4E00-\u9FBF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF]+/g;
                 var universityItems = [];
@@ -240,12 +236,6 @@ import { mapState, mapActions } from 'vuex';
                     let sort_total = sort_total_text.split("/");
                     let sort = sort_total[0]//排名
                     let total = sort_total[1]//数量
-                    this.pan=arr.indexOf(branch_name.trim());//判断格式是否规范
-                    if(this.pan != -1){
-                        if(this.isIn.indexOf(index) == -1){
-                            this.isIn.push(index);
-                        }
-                    }
                     universityItems.push({
                         id: index + 1,
                         course: branch_name,//学科
@@ -258,8 +248,9 @@ import { mapState, mapActions } from 'vuex';
                 let tabledata=this.tableData;
                 let profession=this.professionlists;
                 let branch=this.branchlists;
-                let subject=this.subject;
-                if(this.radio == 1){
+                let subject=this.choose.subject;
+                /**选择的是学科门类 */
+                if(this.form.radio == 1){
                     let subject_items = [];
                     subject.forEach(item => {
                         subject_items.push(item.name.trim());
@@ -276,7 +267,8 @@ import { mapState, mapActions } from 'vuex';
                     });
                     this.tableData = newData;
                 }
-                else if (this.radio == 2) {
+                /**选择的是一级学科排名 */
+                else if (this.form.radio == 2) {
                     let branch_items = [];
                     branch.forEach(item => {
                         branch_items.push(item.name.trim());
@@ -293,6 +285,7 @@ import { mapState, mapActions } from 'vuex';
                     });
                     this.tableData = newData;
                 }
+                /**选择的是专业相关 */
                 else{
                     let profession_items = [];
                     profession.forEach(item => {
@@ -317,10 +310,10 @@ import { mapState, mapActions } from 'vuex';
                 }
             },
             sublimt(){
-                this.dialogVisibleSuccess = true;
+                this.dialogVisibleSuccess = false;
                 const params = {
-                    univercityID: this.universityID,
-                    type: this.radio,
+                    univercityID: this.form.universityID,
+                    type: this.form.radio,
                     items: this.tableData
                 };
                 this.$store.commit('SUBMIT_CATE_HANDLE', params);
@@ -333,10 +326,8 @@ import { mapState, mapActions } from 'vuex';
     .el-select{
         width: 100%;
     }
-    .radio-group,.button{
+    .button{
         margin-top: 30px;
     }
-    .right{padding-left: 40px;}
-    .none{padding-left: 40px;display: none;}
     .el-table .danger{color: brown !important;} 
 </style>
