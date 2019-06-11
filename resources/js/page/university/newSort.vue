@@ -107,13 +107,13 @@ import { mapState, mapActions } from 'vuex';
                 universityTitle:'',
                 radio:0,
                 radiolist:[
-                            {label: 1, radiotext: '学科门类'},
-                            {label: 2,radiotext: '一级学科排名'},
-                            {label: 3, radiotext: '5★+专业'},
-                            {label: 4,radiotext: '5★专业'},
-                            {label: 5, radiotext: '5★-专业'},
-                            {label: 6,radiotext: '4★专业'}
-                            ],
+                    {label: 1, radiotext: '学科门类'},
+                    {label: 2,radiotext: '一级学科排名'},
+                    {label: 3, radiotext: '5★+专业'},
+                    {label: 4,radiotext: '5★专业'},
+                    {label: 5, radiotext: '5★-专业'},
+                    {label: 6,radiotext: '4★专业'}
+                ],
                 textarea:'哲学7/154、理论经济学14/115、应用经济学9/244、法学3/188、政治学5/104、社会学5/88、马克思主义理论3/328、教育学13/140、心理学16/97',
             },
             display:'none',
@@ -193,7 +193,6 @@ import { mapState, mapActions } from 'vuex';
                  const radioList = this.form.radiolist.find(item => {
                     return item.label == radio;
                 })
-                console.log('---sss', radioList);
                 this.radiotext = radioList.radiotext;
             },
             //弹出关闭

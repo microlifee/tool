@@ -24,3 +24,5 @@ Route::get('/choice/branch', 'BranchController@index');
 Route::get('/choice/profession', 'ProfessionController@index');
 Route::get('/university/sort/{universityID}/{sortType}', 'UniversityController@getItems');
 Route::post('/university/sort', 'UniversityController@sort');
+# 政治
+Route::post('/politics/title', 'PoliticsController@save');

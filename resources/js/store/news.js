@@ -42,7 +42,6 @@ export default{
         },
         // 院校相关排名
         getSortList({commit}, params) {
-            console.log(params);
             api.getSortList(params).then(function(res) {
                 commit('setSortItems', res.data);
             });

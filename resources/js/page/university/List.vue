@@ -54,7 +54,7 @@
                         </el-table-column>
                         <el-table-column
                                 prop="name"
-                                label="一级学科"
+                                :label="tableLabel"
                                 >
                         </el-table-column>
                         <el-table-column
@@ -62,6 +62,8 @@
                                 label="排名"
                                 width="120">
                         </el-table-column>
+                        <el-table-column prop="total" label="开设院校数量" width="120"></el-table-column>
+                        <el-table-column prop="updated_at" label="更新时间"></el-table-column>
                     </el-table>
                 </el-col>
             </el-row>
@@ -94,8 +96,6 @@
         },
         created() {
             this.getNewsLists();
-
-            console.log('------', this.$store.state.news.branch);
         },
         methods: {
             ...mapActions([
@@ -111,9 +111,13 @@
             },
             // 查看排名数据
             handleClick(uEntity, type) {
+                switch (type) {
+                    case 1: this.tableLabel = '门类'; break;
+                    case 2: this.tableLabel = '一级学科'; break;
+                    case 3: this.tableLabel = '专业'; break;
+                }
                 const UNIVERSITY_ID = uEntity.id;
                 this.getSortList({ universityID: UNIVERSITY_ID, sortType: type });
-
             }
         }
     }

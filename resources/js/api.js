@@ -30,7 +30,11 @@ export default {
 
     // 保存数据
     saveCateHandle: function (params) {
-        console.log('-11111111111111', params);
         return axios.post('api/university/sort', params)
+    },
+
+    // 政治相关
+    savePolitcsHandle: function (params) {
+        return axios.post('api/politics/title', params);
     }
 }

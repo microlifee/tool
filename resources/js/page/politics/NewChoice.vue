@@ -89,7 +89,7 @@
                     </el-row>
                     <!-- 解析 -->
                     <el-row v-if="form.parse" style="margin: 20px 0;">
-                        <el-alert type="success" effect="dark">【答案解析】 {{ form.parse }}</el-alert>
+                        <el-alert type="success" title="" effect="dark">【答案解析】 {{ form.parse }}</el-alert>
                     </el-row>
                     <!-- 考察知识点 -->
                     <el-row v-if="form.pointID > 0">
@@ -99,14 +99,29 @@
                     <el-row v-if="form.source">
                         <p>题源：<b style="color: #a94442; font-size: 20px;">{{ form.source }}</b></p>
                     </el-row>
-
+                    <!-- 提交数据 -->
+                    <el-row v-if="form.title && form.optionOfA && form.optionOfB && form.optionOfC && form.optionOfD && form.result.length && form.parse && form.source">
+                        <el-button type="success" @click="onSubmitHandle">成功按钮</el-button>
+                    </el-row>
                 </el-col>
             </el-row>
         </div>
+        <!-- 创建题目提示 -->
+        <el-dialog
+            title="提示"
+            :visible.sync="centerDialogVisible"
+            width="30%"
+            center>
+            <span>{{ tips }}</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+    import { mapState, mapActions } from 'vuex';
     export default {
         name: "NewChoice",
         data() {
@@ -122,10 +137,15 @@
                     pointTitle: '',
                     pointID: null,
                     tips: '',
-                    source: '', // 题源
-                }
+                    source: '徐之明 金榜书900题', // 题源
+                },
+                tips: '创建新的数据成功~',
+                centerDialogVisible: false
             }
         },
+        computed: mapState({
+            newTitleResult: state => state.politics.newTitleResult,
+        }),
         created() {
             this.form.title = localStorage.getItem('LOCAL_SAVE_TITLE');
             this.form.optionOfA = localStorage.getItem('LOCAL_SAVE_OPTION_A');
@@ -139,6 +159,9 @@
             this.form.source = localStorage.getItem('LOCAL_SAVE_SOURCE');
         },
         methods: {
+            ...mapActions([
+                'savePolitcsHandle'
+            ]),
             // 保存数据
             cacheTitelHandle() {
                 localStorage.setItem('LOCAL_SAVE_TITLE', this.form.title);
@@ -168,6 +191,39 @@
             findPointHandle() {
                 this.form.pointTitle = '考察的知识点是：' + this.form.pointID;
                 localStorage.setItem('LOCAL_SAVE_POINT_ID', this.form.pointID);
+            },
+            // 提交数据
+            onSubmitHandle() {
+                this.savePolitcsHandle({
+                    title: this.form.title,
+                    options: { 'A': this.form.optionOfA, 'B': this.form.optionOfB, 'C': this.form.optionOfC, 'D': this.form.optionOfD },
+                    result: this.form.result,
+                    parse: this.form.parse,
+                }).then(res => {
+                    this.tips = (res.status == 200) ? '创建新的数据失败，先检查数据是否有问题~' : '创建新的数据成功~';
+                    this.centerDialogVisible = true;
+                    if (res.status == 201) {
+                        this.form.title = '';
+                        this.form.optionOfA = '';
+                        this.form.optionOfB = '';
+                        this.form.optionOfC = '';
+                        this.form.optionOfD = '';
+                        this.form.result = [];
+                        this.form.parse = '';
+                        this.form.pointTitle = '';
+                        this.form.pointID = null;
+                        this.form.tips = '';
+                        this.form.source = '徐之明 金榜书900题';
+                        localStorage.removeItem('LOCAL_SAVE_TITLE');
+                        localStorage.removeItem('LOCAL_SAVE_OPTION_A');
+                        localStorage.removeItem('LOCAL_SAVE_OPTION_B');
+                        localStorage.removeItem('LOCAL_SAVE_OPTION_C');
+                        localStorage.removeItem('LOCAL_SAVE_OPTION_D');
+                        localStorage.removeItem('LOCAL_SAVE_POINT_ID');
+                        localStorage.removeItem('LOCAL_SAVE_RESULT');
+                        localStorage.removeItem('LOCAL_SAVE_PARSE');
+                    }
+                });
             }
         }
     }

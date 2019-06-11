@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="@{{ csrf_token }}">
-    <title>Laravel & Vue</title>
+    <title>内部工具集</title>
     <link rel="stylesheet" type="text/css" href="/css/app.css">
     <style>
         .nav a { text-decoration:none; }
